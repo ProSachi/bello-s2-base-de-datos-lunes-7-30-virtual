@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Laboratorio: Diferenciador de Dependencias</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; padding: 20px; background-color: #f4f6f9; color: #333; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        button { padding: 12px 24px; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; background-color: #34495e; color: white; transition: background 0.3s; }
+        button:hover { background-color: #2c3e50; }
+        button.active { background-color: #e74c3c; font-weight: bold; }
+        
+        .scenario { display: none; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
+        .scenario.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .table-container { display: flex; align-items: center; justify-content: center; margin: 30px 0; position: relative; }
+        .entity-box { display: flex; border: 2px solid #bdc3c7; border-radius: 6px; overflow: hidden; font-size: 18px; }
+        .attr { padding: 15px 25px; border-right: 1px solid #bdc3c7; position: relative; text-align: center; }
+        .attr:last-child { border-right: none; }
+        
+        /* Colores Lógicos */
+        .pk { background-color: #d4edda; font-weight: bold; border-bottom: 4px solid #28a745; }
+        .non-key { background-color: #ffffff; }
+        .highlight-error { background-color: #f8d7da; color: #721c24; }
+        
+        .explanation { background: #e8f4f8; padding: 15px; border-left: 5px solid #3498db; font-size: 16px; line-height: 1.5; }
+        
+        /* Flechas (SVG) */
+        svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        path { fill: none; stroke-width: 3; stroke-linecap: round; }
+        .arrow-valid { stroke: #28a745; }
+        .arrow-invalid { stroke: #dc3545; stroke-dasharray: 5,5; }
+        
+        .marker-valid { fill: #28a745; }
+        .marker-invalid { fill: #dc3545; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Análisis de Dependencias Funcionales</h2>
+    <div class="btn-group">
+        <button id="btn-funcional" class="active" onclick="showScenario('funcional')">1. Dependencia Funcional (Base)</button>
+        <button id="btn-parcial" onclick="showScenario('parcial')">2. Dependencia Parcial (Error 2NF)</button>
+        <button id="btn-transitiva" onclick="showScenario('transitiva')">3. Dependencia Transitiva (Error 3NF)</button>
+    </div>
+
+    <!-- Escenario 1: Funcional Correcta -->
+    <div id="funcional" class="scenario active">
+        <div class="explanation">
+            <strong>La Regla de Oro:</strong> Todo atributo no-clave debe depender única y exclusivamente de la Clave Primaria.
+        </div>
+        <div class="table-container" style="height: 150px;">
+            <div class="entity-box">
+                <div class="attr pk" id="f-pk">Documento [PK]</div>
+                <div class="attr non-key" id="f-nk1">Nombre</div>
+                <div class="attr non-key" id="f-nk2">Fecha_Nac</div>
+            </div>
+            <svg>
+                <defs>
+                    <marker id="arrow-g" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" class="marker-valid" />
+                    </marker>
+                </defs>
+                <!-- Documento -> Nombre -->
+                <path d="M 120 75 Q 180 30 240 75" class="arrow-valid" marker-end="url(#arrow-g)" />
+                <!-- Documento -> Fecha_Nac -->
+                <path d="M 120 75 Q 230 140 370 75" class="arrow-valid" marker-end="url(#arrow-g)" />
+            </svg>
+        </div>
+    </div>
+
+    <!-- Escenario 2: Parcial -->
+    <div id="parcial" class="scenario">
+        <div class="explanation">
+            <strong>El Problema:</strong> Hay una Clave Primaria Compuesta (2 partes). Un atributo depende de una sola parte, ignorando la otra. Viola la 2NF.
+        </div>
+        <div class="table-container" style="height: 150px;">
+            <div class="entity-box">
+                <div class="attr pk" id="p-pk1">ID_Estudiante [PK]</div>
+                <div class="attr pk" id="p-pk2">Cod_Materia [PK]</div>
+                <div class="attr highlight-error" id="p-nk1">Nombre_Materia</div>
+                <div class="attr non-key" id="p-nk2">Nota_Final</div>
+            </div>
+            <svg>
+                <defs>
+                    <marker id="arrow-r" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" class="marker-invalid" />
+                    </marker>
+                </defs>
+                <!-- Cod_Materia -> Nombre_Materia (PARCIAL) -->
+                <path d="M 300 75 Q 380 30 460 75" class="arrow-invalid" marker-end="url(#arrow-r)" />
+                <!-- Ambas -> Nota_Final (CORRECTA) -->
+                <path d="M 180 115 L 180 130 L 610 130 L 610 115" class="arrow-valid" marker-end="url(#arrow-g)" />
+            </svg>
+        </div>
+    </div>
+
+    <!-- Escenario 3: Transitiva -->
+    <div id="transitiva" class="scenario">
+        <div class="explanation">
+            <strong>El Problema:</strong> La clave primaria es simple (1 parte), por lo que cumple 2NF. Sin embargo, un atributo NO clave determina a otro atributo NO clave. Viola la 3NF.
+        </div>
+        <div class="table-container" style="height: 150px;">
+            <div class="entity-box">
+                <div class="attr pk" id="t-pk">ID_Empleado [PK]</div>
+                <div class="attr non-key" id="t-nk1">Nombre_Emp</div>
+                <div class="attr non-key" id="t-nk2">ID_Depto</div>
+                <div class="attr highlight-error" id="t-nk3">Nombre_Depto</div>
+            </div>
+            <svg>
+                <!-- Empleado -> Depto (Válido) -->
+                <path d="M 120 75 Q 260 140 400 75" class="arrow-valid" marker-end="url(#arrow-g)" />
+                <!-- Depto -> Nombre_Depto (TRANSITIVA) -->
+                <path d="M 400 75 Q 490 30 570 75" class="arrow-invalid" marker-end="url(#arrow-r)" />
+            </svg>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showScenario(id) {
+        document.querySelectorAll('.scenario').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('button').forEach(el => el.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('btn-' + id).classList.add('active');
+    }
+</script>
+</body>
+</html>

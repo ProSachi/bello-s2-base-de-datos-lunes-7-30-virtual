@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulador de Normalización de Base de Datos</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; padding: 20px; background-color: #f8f9fa; color: #333; }
+        .container { max-width: 1200px; margin: auto; }
+        .header-panel { background: #2c3e50; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .controls { margin-top: 15px; }
+        button { padding: 10px 20px; margin-right: 10px; cursor: pointer; border: none; background: #3498db; color: white; border-radius: 5px; font-weight: bold; transition: background 0.3s; }
+        button:hover { background: #2980b9; }
+        button.active-btn { background: #e74c3c; }
+        
+        .view { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .view.active { display: block; }
+        
+        .table-container { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        h3 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; }
+        
+        table { border-collapse: collapse; width: 100%; margin-bottom: 10px; font-size: 14px; }
+        th, td { border: 1px solid #dee2e6; padding: 10px; text-align: left; }
+        th { background-color: #ecf0f1; color: #2c3e50; }
+        
+        /* Código de Colores Pedagógico */
+        .pk { background-color: #d4edda !important; font-weight: bold; } /* Verde para Primary Key */
+        .fk { background-color: #fff3cd !important; font-style: italic; } /* Amarillo para Foreign Key */
+        .error-cell { background-color: #f8d7da; color: #721c24; border: 2px solid #dc3545; } /* Rojo para errores UNF */
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .legend { margin-top: 20px; padding: 15px; background: white; border-radius: 8px; border-left: 4px solid #3498db; }
+        .box { display: inline-block; width: 15px; height: 15px; vertical-align: middle; margin-right: 5px; border: 1px solid #bdc3c7;}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-panel">
+        <h2>Simulador Dinámico: E-commerce "TechStore"</h2>
+        <p id="explicacion-texto">Estado inicial: Los datos se guardan en un archivo plano (Excel). Observa el problema en la columna de productos.</p>
+        <div class="controls">
+            <button id="btn-unf" class="active-btn" onclick="cambiarVista('unf', this)">0. Estado Inicial (UNF)</button>
+            <button id="btn-1nf" onclick="cambiarVista('1nf', this)">1. Primera Forma Normal (1NF)</button>
+            <button id="btn-2nf" onclick="cambiarVista('2nf', this)">2. Segunda Forma Normal (2NF)</button>
+            <button id="btn-3nf" onclick="cambiarVista('3nf', this)">3. Tercera Forma Normal (3NF)</button>
+        </div>
+    </div>
+
+    <!-- VISTA UNF -->
+    <div id="unf" class="view active">
+        <div class="table-container">
+            <h3>Archivo Plano Central (Forma No Normalizada)</h3>
+            <table>
+                <tr>
+                    <th>Num_Orden</th>
+                    <th>Fecha_Orden</th>
+                    <th>ID_Cliente</th>
+                    <th>Nombre_Cliente</th>
+                    <th>Ciudad_Envio</th>
+                    <th class="error-cell">Artículos_Comprados (Múltiples valores)</th>
+                </tr>
+                <tr>
+                    <td>1001</td><td>09-Ago-2026</td><td>C-55</td><td>Carlos Ruiz</td><td>Medellín</td>
+                    <td class="error-cell">[P-10, Mouse, $20, Cant:1] <br> [P-12, Teclado, $45, Cant:1]</td>
+                </tr>
+                <tr>
+                    <td>1002</td><td>09-Ago-2026</td><td>C-88</td><td>Ana Gómez</td><td>Bogotá</td>
+                    <td class="error-cell">[P-10, Mouse, $20, Cant:2]</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- VISTA 1NF -->
+    <div id="1nf" class="view">
+        <div class="table-container">
+            <h3>Tabla en 1NF (Atomicidad)</h3>
+            <p><strong>Regla:</strong> Sin atributos multivaluados. La Clave Primaria ahora es compuesta (Orden + Producto).</p>
+            <table>
+                <tr>
+                    <th class="pk">Num_Orden [PK]</th>
+                    <th class="pk">Cod_Producto [PK]</th>
+                    <th>Fecha_Orden</th>
+                    <th>ID_Cliente</th>
+                    <th>Nombre_Cliente</th>
+                    <th>Ciudad_Envio</th>
+                    <th>Nombre_Producto</th>
+                    <th>Precio</th>
+                    <th>Cant</th>
+                </tr>
+                <tr><td class="pk">1001</td><td class="pk">P-10</td><td>09-Ago-2026</td><td>C-55</td><td>Carlos Ruiz</td><td>Medellín</td><td>Mouse</td><td>$20</td><td>1</td></tr>
+                <tr><td class="pk">1001</td><td class="pk">P-12</td><td>09-Ago-2026</td><td>C-55</td><td>Carlos Ruiz</td><td>Medellín</td><td>Teclado</td><td>$45</td><td>1</td></tr>
+                <tr><td class="pk">1002</td><td class="pk">P-10</td><td>09-Ago-2026</td><td>C-88</td><td>Ana Gómez</td><td>Bogotá</td><td>Mouse</td><td>$20</td><td>2</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- VISTA 2NF -->
+    <div id="2nf" class="view">
+        <div class="grid-2">
+            <div class="table-container">
+                <h3>1. Tabla Órdenes</h3>
+                <p>Datos dependientes de la orden.</p>
+                <table>
+                    <tr><th class="pk">Num_Orden [PK]</th><th>Fecha_Orden</th><th>ID_Cliente</th><th>Nombre_Cliente</th><th>Ciudad_Envio</th></tr>
+                    <tr><td class="pk">1001</td><td>09-Ago-2026</td><td>C-55</td><td>Carlos Ruiz</td><td>Medellín</td></tr>
+                    <tr><td class="pk">1002</td><td>09-Ago-2026</td><td>C-88</td><td>Ana Gómez</td><td>Bogotá</td></tr>
+                </table>
+            </div>
+            <div class="table-container">
+                <h3>2. Tabla Productos</h3>
+                <p>Datos dependientes del producto.</p>
+                <table>
+                    <tr><th class="pk">Cod_Producto [PK]</th><th>Nombre_Producto</th><th>Precio</th></tr>
+                    <tr><td class="pk">P-10</td><td>Mouse</td><td>$20</td></tr>
+                    <tr><td class="pk">P-12</td><td>Teclado</td><td>$45</td></tr>
+                </table>
+            </div>
+        </div>
+        <div class="table-container">
+            <h3>3. Tabla Detalle (Puente)</h3>
+            <p>La cantidad depende de la combinación de ambas claves.</p>
+            <table>
+                <tr><th class="pk fk">Num_Orden [PK][FK]</th><th class="pk fk">Cod_Producto [PK][FK]</th><th>Cant</th></tr>
+                <tr><td class="pk fk">1001</td><td class="pk fk">P-10</td><td>1</td></tr>
+                <tr><td class="pk fk">1001</td><td class="pk fk">P-12</td><td>1</td></tr>
+                <tr><td class="pk fk">1002</td><td class="pk fk">P-10</td><td>2</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- VISTA 3NF -->
+    <div id="3nf" class="view">
+        <div class="grid-3">
+            <div class="table-container">
+                <h3>1. Tabla Clientes (Nueva)</h3>
+                <p>Extraída para evitar dependencias transitivas.</p>
+                <table>
+                    <tr><th class="pk">ID_Cliente [PK]</th><th>Nombre_Cliente</th><th>Ciudad_Envio</th></tr>
+                    <tr><td class="pk">C-55</td><td>Carlos Ruiz</td><td>Medellín</td></tr>
+                    <tr><td class="pk">C-88</td><td>Ana Gómez</td><td>Bogotá</td></tr>
+                </table>
+            </div>
+            <div class="table-container">
+                <h3>2. Tabla Órdenes (Limpia)</h3>
+                <p>Solo contiene la FK hacia el cliente.</p>
+                <table>
+                    <tr><th class="pk">Num_Orden [PK]</th><th>Fecha_Orden</th><th class="fk">ID_Cliente [FK]</th></tr>
+                    <tr><td class="pk">1001</td><td>09-Ago-2026</td><td class="fk">C-55</td></tr>
+                    <tr><td class="pk">1002</td><td>09-Ago-2026</td><td class="fk">C-88</td></tr>
+                </table>
+            </div>
+             <div class="table-container">
+                <h3>3. Tabla Productos</h3>
+                <table>
+                    <tr><th class="pk">Cod_Producto [PK]</th><th>Nombre_Producto</th><th>Precio</th></tr>
+                    <tr><td class="pk">P-10</td><td>Mouse</td><td>$20</td></tr>
+                    <tr><td class="pk">P-12</td><td>Teclado</td><td>$45</td></tr>
+                </table>
+            </div>
+        </div>
+        <div class="table-container">
+            <h3>4. Tabla Detalle (Puente)</h3>
+            <table>
+                <tr><th class="pk fk">Num_Orden [PK][FK]</th><th class="pk fk">Cod_Producto [PK][FK]</th><th>Cant</th></tr>
+                <tr><td class="pk fk">1001</td><td class="pk fk">P-10</td><td>1</td></tr>
+                <tr><td class="pk fk">1001</td><td class="pk fk">P-12</td><td>1</td></tr>
+                <tr><td class="pk fk">1002</td><td class="pk fk">P-10</td><td>2</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="legend">
+        <strong>Simbología Arquitectónica: </strong>
+        <div class="legend-item"><span class="box pk"></span> Clave Primaria (Identificador Único)</div>
+        <div class="legend-item"><span class="box fk"></span> Clave Foránea (Puente Relacional)</div>
+        <div class="legend-item"><span class="box error-cell"></span> Falla Estructural (Atributo a corregir)</div>
+    </div>
+</div>
+
+<script>
+    const textos = {
+        'unf': 'Estado inicial: Los datos se guardan en un archivo plano (Excel). Observa el problema de listas anidadas en la última columna (rojo).',
+        '1nf': 'Paso 1 (1NF): Se desglosan los atributos multivaluados. Ahora cada celda tiene un valor atómico, pero la información del cliente se repite causando redundancia.',
+        '2nf': 'Paso 2 (2NF): Eliminamos dependencias parciales separando las entidades principales. Observa cómo nacen las tablas de Órdenes y Productos.',
+        '3nf': 'Paso 3 (3NF Final): Eliminamos dependencias transitivas. El Nombre y Ciudad dependen del Cliente, no de la Orden. Se extrae la tabla Clientes, vinculándola mediante una Clave Foránea (Amarillo).'
+    };
+
+    function cambiarVista(idVista, btn) {
+        // Ocultar todas las vistas
+        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+        // Mostrar la vista seleccionada
+        document.getElementById(idVista).classList.add('active');
+        
+        // Resetear estilos de botones
+        document.querySelectorAll('button').forEach(b => b.classList.remove('active-btn'));
+        // Activar el botón presionado
+        btn.classList.add('active-btn');
+
+        // Actualizar el texto pedagógico del panel superior
+        document.getElementById('explicacion-texto').innerText = textos[idVista];
+    }
+</script>
+
+</body>
+</html>
