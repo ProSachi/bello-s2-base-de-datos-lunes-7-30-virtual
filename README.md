@@ -37,6 +37,11 @@
 
 ---
 
+### 🔗 Clase semana 10
+👉 **[Ver Grabación y Resumen en Microsoft Teams](https://cesdenet-my.sharepoint.com/:v:/g/personal/educaciondigital2_cesde_edu_co/IQBtD1yZqNnaQrPGnZ1tb48aAd9f1k-q32T9xKw9Ofb58hs?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D&e=kScxmG)**
+
+---
+
 ###  Recomendaciones para el estudio de la sesión
 * **Visualización activa:** Te sugerimos tener tu entorno de desarrollo abierto para replicar los ejemplos de código mostrados durante la explicación.
 * **Apuntes:** Revisa la sección de chat y archivos compartidos en las evidencias, como guías y ejercicios de la semana.
