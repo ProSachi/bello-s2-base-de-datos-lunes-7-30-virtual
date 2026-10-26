@@ -47,6 +47,10 @@
 
 ---
 
+### 🔗 Clase semana 13
+👉 **[Ver Grabación y Resumen en Microsoft Teams](https://cesdenet-my.sharepoint.com/:v:/g/personal/educaciondigital2_cesde_edu_co/IQBXQMI94YYiTK1ZGQQ1Q1caATZgDBascxqXSu5WqADhzvw?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D&e=kE1vgl)**
+---
+
 
 
 ###  Recomendaciones para el estudio de la sesión
